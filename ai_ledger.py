@@ -31,10 +31,12 @@ PRICE_TABLE = {
 
 
 def estimate_cost(model, prompt_tokens, response_tokens):
+    if model not in PRICE_TABLE:
+        # Ojo: si el modelo no está en la tabla, el costo da 0.
+        # En un caso real conviene avisar, no registrar "gratis" en silencio.
+        print(f"[aviso] modelo '{model}' sin precio definido; costo = 0")
     p = PRICE_TABLE.get(model, {"in": 0.0, "out": 0.0})
-    return round(
-        (prompt_tokens / 1000.0) * p["in"] + (response_tokens / 1000.0) * p["out"], 6
-    )
+    return round((prompt_tokens/1000.0)*p["in"] + (response_tokens/1000.0)*p["out"], 6)
 
 
 # --- El wrapper que conecta a IRIS y registra ---
